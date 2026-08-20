@@ -1,0 +1,46 @@
+name: Python CI Pipeline
+
+# 1. Triggers: When should this pipeline run?
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+# 2. Jobs: A workflow consists of one or more jobs
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest # The server operating system
+
+    # 3. Steps: The sequence of commands to execute
+    steps:
+    # Check out your repository code onto the server
+    - uses: actions/checkout@v4
+
+    # Install Python on the server
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+        cache: 'pip' # Caches packages to make future runs faster
+
+    # Install the tools we defined in requirements.txt
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    # Run the linter to catch syntax/style errors
+    - name: Lint with ruff
+      run: |
+        ruff check .
+
+    # Run the type checker to catch type mismatch errors
+    - name: Type check with mypy
+      run: |
+        mypy src/
+
+    # Run the automated tests. If these fail, the whole pipeline fails!
+    - name: Test with pytest
+      run: |
+        pytest tests/
