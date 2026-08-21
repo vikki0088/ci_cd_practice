@@ -43,4 +43,4 @@ jobs:
     # Run the automated tests. If these fail, the whole pipeline fails!
     - name: Test with pytest
       run: |
-        pytest tests/
+        pytest test/
